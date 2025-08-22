@@ -1,0 +1,41 @@
+{
+  "name": "nodejs-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "prepare": "npx ts-patch install -s",
+    "dev": "ts-node-dev -r ts-patch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "target": "ESNext",
+  "module": "ESNext",
+  "moduleResolution": "NodeNext",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fastify/cookie": "^11.0.2",
+    "@fastify/cors": "^11.1.0",
+    "@fastify/env": "^5.0.2",
+    "@fastify/jwt": "^10.0.0",
+    "@fastify/multipart": "^9.0.3",
+    "@fastify/oauth2": "^8.1.2",
+    "@fastify/rate-limit": "^10.3.0",
+    "@fastify/swagger": "^9.5.1",
+    "@fastify/swagger-ui": "^5.2.3",
+    "@typegoose/typegoose": "^12.18.0",
+    "fastify": "^5.5.0",
+    "reflect-metadata": "^0.2.2",
+    "tsyringe": "^4.10.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "ts-node-dev": "^2.0.0",
+    "ts-patch": "^3.3.0",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.9.2",
+    "typescript-transform-paths": "^3.5.5"
+  }
+}
