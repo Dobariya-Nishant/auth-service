@@ -1,5 +1,9 @@
-import { getModelForClass, modelOptions, prop } from "@typegoose/typegoose";
-import { AuthType } from "@/auth/auth.types";
+import {
+  getModelForClass,
+  modelOptions,
+  mongoose,
+  prop,
+} from "@typegoose/typegoose";
 import { UserRoles } from "@/users/users.type";
 
 @modelOptions({
@@ -9,6 +13,9 @@ import { UserRoles } from "@/users/users.type";
   },
 })
 export class User {
+  @prop({ required: true, default: () => new mongoose.Types.ObjectId() })
+  public readonly _id!: string;
+
   @prop()
   public fullName?: string;
 
@@ -24,14 +31,15 @@ export class User {
   @prop({ required: true, unique: true })
   public email!: string;
 
-  @prop({ required: true, enum: AuthType })
-  public authType!: AuthType;
-
   @prop({ required: true, enum: UserRoles, default: UserRoles.USER })
   public role!: UserRoles;
 
   @prop({ required: true })
   public password!: string;
+
+  public readonly createdAt!: Date;
+
+  public readonly updatedAt!: Date;
 }
 
 export const UserModel = getModelForClass(User);

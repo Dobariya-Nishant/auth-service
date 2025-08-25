@@ -14,8 +14,8 @@ export class Session {
   @prop({ required: true })
   public refreshToken!: string;
 
-  @prop({ enum: AuthType })
-  public authType?: AuthType;
+  @prop({ enum: AuthType, default: AuthType.LOCAL })
+  public authType!: AuthType;
 
   @prop()
   public oauthToken?: string;

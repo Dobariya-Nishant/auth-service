@@ -1,28 +1,34 @@
 import { injectable } from "tsyringe";
-import { UserQuery, GetUsersQuery, IUsersRepository } from "@/users/users.type";
-import { User, UserModel } from "@/users/users.entity";
+import { Session, SessionModel } from "@/auth/session.entity";
+import {
+  ISessionRepository,
+  MultiSessionQuery,
+  SessionQuery,
+} from "@/auth/auth.types";
 
 @injectable()
 export default class SessionRepository implements ISessionRepository {
   constructor() {}
 
-  getOne(query: UserQuery): Promise<User | null> {
-    return UserModel.findOne(query).lean().exec();
+  getOne(query: SessionQuery): Promise<Session | null> {
+    return SessionModel.findOne(query).lean().exec();
   }
 
-  get(query: GetUsersQuery): Promise<Array<User>> {
-    return UserModel.find(query).lean().exec();
+  get(query: MultiSessionQuery): Promise<Array<Session>> {
+    return SessionModel.find(query).lean().exec();
   }
 
-  create(data: User): Promise<User> {
-    return UserModel.create(data);
+  create(data: Session): Promise<Session> {
+    return SessionModel.create(data);
   }
 
-  update(query: UserQuery, data: Partial<User>): Promise<User | null> {
-    return UserModel.findOneAndUpdate(query, data, { new: true }).lean().exec();
+  update(query: SessionQuery, data: Partial<Session>): Promise<Session | null> {
+    return SessionModel.findOneAndUpdate(query, data, { new: true })
+      .lean()
+      .exec();
   }
 
-  delete(query: UserQuery): Promise<User | null> {
-    return UserModel.findOneAndDelete(query).lean().exec();
+  async delete(query: SessionQuery): Promise<void> {
+    await SessionModel.deleteOne(query).exec();
   }
 }

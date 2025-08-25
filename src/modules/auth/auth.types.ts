@@ -1,17 +1,11 @@
+import { Session } from "@/auth/session.entity";
 import { User } from "@/users/users.entity";
-import { UserRoles } from "@/users/users.type";
-import { Session } from "./session.entity";
 
-export type LoginDto = {
+export type Login = {
   email?: string;
   userName?: string;
   password: string;
 };
-
-export type SignUpDto = Omit<
-  User,
-  "authType" | "role" | "createdAt" | "updatedAt"
->;
 
 export enum AuthType {
   LOCAL = "local",
@@ -19,11 +13,7 @@ export enum AuthType {
 }
 
 export type JwtPayload = {
-  userName: string;
-  email: string;
-  role: UserRoles;
-  authType: AuthType;
-  oauthToken?: string;
+  userId: string;
 };
 
 export type Tokens = {
@@ -31,18 +21,57 @@ export type Tokens = {
   refreshToken: string;
 };
 
+export type SessionQuery = {
+  userId: string;
+  token: string;
+};
+
+export type MultiSessionQuery = {
+  userId: string;
+  createdAt?: Date;
+  limit?: number;
+};
+
 export interface IAuthService {
-  login(data: LoginDto): Promise<Tokens>;
+  hashPassword(password: string): Promise<string>;
 
-  signup(data: SignUpDto): Promise<Tokens>;
+  verifyPassword(password: string, hashedPassword: string): Promise<boolean>;
 
-  logout(): Promise<void>;
+  login(data: Login): Promise<Tokens>;
+
+  signUp(data: User): Promise<Tokens>;
+
+  logout(userId: string, refreshToken: string): Promise<void>;
+}
+
+export interface ISessionService {
+  generateSessionTokens(jwtPayload: JwtPayload): Tokens;
+
+  verifySessionToken(token: string, isRefresh: boolean): JwtPayload;
+
+  get(query: MultiSessionQuery): Promise<Session[]>;
+
+  getOne(query: SessionQuery): Promise<Session>;
+
+  create(
+    userId: string,
+    authType: AuthType,
+    oauthToken?: string
+  ): Promise<Tokens>;
+
+  update(query: SessionQuery): Promise<Tokens>;
+
+  delete(query: SessionQuery): Promise<void>;
 }
 
 export interface ISessionRepository {
+  getOne(query: SessionQuery): Promise<Session | null>;
+
+  get(query: MultiSessionQuery): Promise<Array<Session>>;
+
   create(data: Session): Promise<Session>;
 
-  update(data: SignUpDto): Promise<Session>;
+  update(query: SessionQuery, data: Partial<Session>): Promise<Session | null>;
 
-  delete(): Promise<void>;
+  delete(query: SessionQuery): Promise<void>;
 }

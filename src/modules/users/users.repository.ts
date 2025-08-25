@@ -1,16 +1,20 @@
-import { inject, injectable } from "tsyringe";
-import { UserQuery, GetUsersQuery, IUsersRepository } from "@/users/users.type";
+import { injectable } from "tsyringe";
+import { UserQuery, IUserRepository, MultiUserQuery } from "@/users/users.type";
 import { User, UserModel } from "@/users/users.entity";
 
 @injectable()
-export default class UsersRepository implements IUsersRepository {
+export default class UserRepository implements IUserRepository {
   constructor() {}
 
   getOne(query: UserQuery): Promise<User | null> {
-    return UserModel.findOne(query).lean().exec();
+    return UserModel.findOne({
+      $or: [{ userName: query.userName }, { email: query.email }],
+    })
+      .lean()
+      .exec();
   }
 
-  get(query: GetUsersQuery): Promise<Array<User>> {
+  get(query: MultiUserQuery): Promise<Array<User>> {
     return UserModel.find(query).lean().exec();
   }
 
