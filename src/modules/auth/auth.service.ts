@@ -1,34 +1,34 @@
 import { inject, injectable } from "tsyringe";
+import { compare, hash } from "bcrypt";
 import {
-  Login,
   Tokens,
   IAuthService,
   ISessionService,
   AuthType,
+  LoginPayload,
 } from "@/auth/auth.types";
-import { IUserService } from "@/users/users.type";
-import { compare, hash } from "bcrypt";
 import {
   ConflictError,
   NotFoundError,
   UnauthorizedError,
-} from "helpers/errors";
-import { User } from "@/users/users.entity";
+} from "@/helpers/errors";
+import { User } from "@/users/user.entity";
+import { IUserService } from "@/users/user.type";
 
 @injectable()
 export default class AuthService implements IAuthService {
   constructor(
-    @inject("SessionService") private sessionService: ISessionService,
-    @inject("UserService") private userService: IUserService
+    @inject("ISessionService") private sessionService: ISessionService,
+    @inject("IUserService") private userService: IUserService
   ) {}
 
-  async hashPassword(password: string): Promise<string> {
+  private async hashPassword(password: string): Promise<string> {
     const saltRounds = 10;
     const hashed = await hash(password, saltRounds);
     return hashed;
   }
 
-  async verifyPassword(
+  private async verifyPassword(
     password: string,
     hashedPassword: string
   ): Promise<boolean> {
@@ -36,7 +36,7 @@ export default class AuthService implements IAuthService {
     return match;
   }
 
-  async login(data: Login): Promise<Tokens> {
+  async login(data: LoginPayload): Promise<Tokens> {
     const user = await this.userService.getOne(data);
 
     if (!user?._id) {
@@ -52,7 +52,10 @@ export default class AuthService implements IAuthService {
       throw new UnauthorizedError("credentials are not valid");
     }
 
-    const tokens = await this.sessionService.create(user._id, AuthType.LOCAL);
+    const tokens = await this.sessionService.create({
+      userId: user._id,
+      authType: AuthType.LOCAL,
+    });
 
     return tokens;
   }
@@ -73,7 +76,10 @@ export default class AuthService implements IAuthService {
 
     const user = await this.userService.create(data);
 
-    const tokens = await this.sessionService.create(user._id, AuthType.LOCAL);
+    const tokens = await this.sessionService.create({
+      userId: user._id,
+      authType: AuthType.LOCAL,
+    });
 
     return tokens;
   }

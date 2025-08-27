@@ -4,7 +4,7 @@ import {
   mongoose,
   prop,
 } from "@typegoose/typegoose";
-import { UserRoles } from "@/users/users.type";
+import { UserRoles } from "@/users/user.type";
 
 @modelOptions({
   schemaOptions: {

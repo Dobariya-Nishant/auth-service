@@ -1,13 +1,20 @@
-import "reflect-metadata";
 import Fastify from "fastify";
 import registerPlugins from "@/config/plugins";
+import registerRoutes from "@/config/routes";
+import { User } from "@/users/user.entity";
+
+declare module "fastify" {
+  interface FastifyRequest {
+    user?: User;
+  }
+}
 
 async function server() {
   const app = Fastify({ logger: true });
 
   await registerPlugins(app);
 
-  // await registerRoutes(app);
+  await registerRoutes(app);
 
   app.setNotFoundHandler(
     {

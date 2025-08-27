@@ -1,7 +1,7 @@
 import { Session } from "@/auth/session.entity";
-import { User } from "@/users/users.entity";
+import { User } from "@/users/user.entity";
 
-export type Login = {
+export type LoginPayload = {
   email?: string;
   userName?: string;
   password: string;
@@ -14,6 +14,8 @@ export enum AuthType {
 
 export type JwtPayload = {
   userId: string;
+  authType: AuthType;
+  oauthToken?: string;
 };
 
 export type Tokens = {
@@ -33,11 +35,7 @@ export type MultiSessionQuery = {
 };
 
 export interface IAuthService {
-  hashPassword(password: string): Promise<string>;
-
-  verifyPassword(password: string, hashedPassword: string): Promise<boolean>;
-
-  login(data: Login): Promise<Tokens>;
+  login(data: LoginPayload): Promise<Tokens>;
 
   signUp(data: User): Promise<Tokens>;
 
@@ -45,19 +43,11 @@ export interface IAuthService {
 }
 
 export interface ISessionService {
-  generateSessionTokens(jwtPayload: JwtPayload): Tokens;
-
-  verifySessionToken(token: string, isRefresh: boolean): JwtPayload;
-
   get(query: MultiSessionQuery): Promise<Session[]>;
 
   getOne(query: SessionQuery): Promise<Session>;
 
-  create(
-    userId: string,
-    authType: AuthType,
-    oauthToken?: string
-  ): Promise<Tokens>;
+  create(payload: JwtPayload): Promise<Tokens>;
 
   update(query: SessionQuery): Promise<Tokens>;
 

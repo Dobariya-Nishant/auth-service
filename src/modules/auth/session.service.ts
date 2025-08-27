@@ -10,16 +10,16 @@ import {
   Tokens,
 } from "@/auth/auth.types";
 import { Session } from "@/auth/session.entity";
-import { NotFoundError, UnauthorizedError } from "helpers/errors";
+import { NotFoundError, UnauthorizedError } from "@/helpers/errors";
 
 @injectable()
 export default class SessionService implements ISessionService {
   constructor(
-    @inject("SessionRepository")
+    @inject("ISessionRepository")
     private sessionRepository: ISessionRepository
   ) {}
 
-  generateSessionTokens(jwtPayload: JwtPayload): Tokens {
+  private generateSessionTokens(jwtPayload: JwtPayload): Tokens {
     const accessToken = sign(
       jwtPayload,
       process.env.PRIVATE_ACCESS_TOKEN_KEY as string,
@@ -41,7 +41,7 @@ export default class SessionService implements ISessionService {
     return { accessToken, refreshToken };
   }
 
-  verifySessionToken(token: string, isRefresh: boolean): JwtPayload {
+  private verifySessionToken(token: string, isRefresh: boolean): JwtPayload {
     let key: string;
 
     if (isRefresh) {
@@ -72,18 +72,20 @@ export default class SessionService implements ISessionService {
     return session;
   }
 
-  async create(
-    userId: string,
-    authType: AuthType = AuthType.LOCAL,
-    oauthToken?: string
-  ): Promise<Tokens> {
-    const tokens = this.generateSessionTokens({ userId });
+  async verify(query: SessionQuery): Promise<JwtPayload> {
+    const session = await this.getOne(query);
+
+    return this.verifySessionToken(session.refreshToken, true);
+  }
+
+  async create(payload: JwtPayload): Promise<Tokens> {
+    const tokens = this.generateSessionTokens(payload);
 
     const session: Session = {
-      userId: userId,
+      userId: payload.userId,
       refreshToken: tokens.refreshToken,
-      ...(authType && { authType }),
-      ...(oauthToken && { oauthToken }),
+      authType: payload.authType,
+      oauthToken: payload.authType,
     };
 
     await this.sessionRepository.create(session);
@@ -92,7 +94,10 @@ export default class SessionService implements ISessionService {
   }
 
   async update(query: SessionQuery): Promise<Tokens> {
-    const tokens = this.generateSessionTokens({ userId: query.userId });
+    const tokens = this.generateSessionTokens({
+      userId: query.userId,
+      authType: AuthType.LOCAL,
+    });
 
     const sessionUpdate: Partial<Session> = {
       refreshToken: tokens.refreshToken,

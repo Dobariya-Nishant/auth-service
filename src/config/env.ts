@@ -4,9 +4,9 @@ export default {
     "PORT",
     "DB_URL",
     "ORIGIN",
-    "GOOGLE_CLIENT_ID",
-    "GOOGLE_CLIENT_SECRET",
-    "GOOGLE_CALLBACK_URL",
+    // "GOOGLE_CLIENT_ID",
+    // "GOOGLE_CLIENT_SECRET",
+    // "GOOGLE_CALLBACK_URL",
   ],
   properties: {
     PORT: { type: "string" },

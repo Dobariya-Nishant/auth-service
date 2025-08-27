@@ -4,14 +4,14 @@ import {
   IUserService,
   MultiUserQuery,
   UserQuery,
-} from "@/users/users.type";
-import { User } from "@/users/users.entity";
-import { NotFoundError } from "helpers/errors";
+} from "@/users/user.type";
+import { User } from "@/users/user.entity";
+import { NotFoundError } from "@/helpers/errors";
 
 @injectable()
 export default class UserService implements IUserService {
   constructor(
-    @inject("UserRepository") private userRepository: IUserRepository
+    @inject("IUserRepository") private userRepository: IUserRepository
   ) {}
 
   async getOne(query: UserQuery): Promise<User> {

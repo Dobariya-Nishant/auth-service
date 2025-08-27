@@ -19,6 +19,9 @@ export class Session {
 
   @prop()
   public oauthToken?: string;
+
+  @prop({ default: () => new Date(), expires: "30d" })
+  public readonly expireAt?: Date;
 }
 
 export const SessionModel = getModelForClass(Session);

@@ -53,28 +53,36 @@ export default async function registerPlugins(app: FastifyInstance) {
         description: "API documentation for Auth Service",
         version: "1.0.0",
       },
+      components: {
+        securitySchemes: {
+          bearerAuth: {
+            type: "http",
+            scheme: "bearer",
+            bearerFormat: "JWT",
+          },
+        },
+      },
     },
   });
 
   await app.register(fastifySwaggerUi, {
     routePrefix: "/docs",
     uiConfig: {
-      docExpansion: "full",
       deepLinking: false,
     },
   });
 
-  await app.register(fastifyOauth2, {
-    name: "googleOAuth2",
-    scope: ["profile", "email"],
-    credentials: {
-      client: {
-        id: process.env.GOOGLE_CLIENT_ID as string,
-        secret: process.env.GOOGLE_CLIENT_SECRET as string,
-      },
-      auth: fastifyOauth2.GOOGLE_CONFIGURATION,
-    },
-    startRedirectPath: "/auth/login/google",
-    callbackUri: process.env.GOOGLE_CALLBACK_URL as string,
-  });
+  // await app.register(fastifyOauth2, {
+  //   name: "googleOAuth2",
+  //   scope: ["profile", "email"],
+  //   credentials: {
+  //     client: {
+  //       id: process.env.GOOGLE_CLIENT_ID as string,
+  //       secret: process.env.GOOGLE_CLIENT_SECRET as string,
+  //     },
+  //     auth: fastifyOauth2.GOOGLE_CONFIGURATION,
+  //   },
+  //   startRedirectPath: "/auth/login/google",
+  //   callbackUri: process.env.GOOGLE_CALLBACK_URL as string,
+  // });
 }

@@ -1,4 +1,4 @@
-import { User } from "@/users/users.entity";
+import { User } from "@/users/user.entity";
 
 export enum UserRoles {
   ADMIN = "admin",

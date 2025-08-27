@@ -1,6 +1,6 @@
 import { injectable } from "tsyringe";
-import { UserQuery, IUserRepository, MultiUserQuery } from "@/users/users.type";
-import { User, UserModel } from "@/users/users.entity";
+import { UserQuery, IUserRepository, MultiUserQuery } from "@/users/user.type";
+import { User, UserModel } from "@/users/user.entity";
 
 @injectable()
 export default class UserRepository implements IUserRepository {
@@ -15,7 +15,17 @@ export default class UserRepository implements IUserRepository {
   }
 
   get(query: MultiUserQuery): Promise<Array<User>> {
-    return UserModel.find(query).lean().exec();
+    const conditions: any = {};
+
+    if (query.lastCreatedAt) {
+      conditions.createdAt = { $lt: query.lastCreatedAt };
+    }
+
+    return UserModel.find(conditions)
+      .sort({ createdAt: -1 })
+      .limit(query.limit || 0)
+      .lean()
+      .exec();
   }
 
   create(data: User): Promise<User> {
