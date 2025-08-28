@@ -1,5 +1,12 @@
-import { getModelForClass, prop, modelOptions } from "@typegoose/typegoose";
+import {
+  getModelForClass,
+  prop,
+  modelOptions,
+  Ref,
+} from "@typegoose/typegoose";
 import { AuthType } from "@/auth/auth.types";
+import { User } from "@/users/user.entity";
+import { Types } from "mongoose";
 
 @modelOptions({
   schemaOptions: {
@@ -8,8 +15,11 @@ import { AuthType } from "@/auth/auth.types";
   },
 })
 export class Session {
-  @prop({ required: true })
-  public userId!: string;
+  @prop({ required: true, default: () => new Types.ObjectId() })
+  public readonly _id?: string;
+
+  @prop({ ref: () => User, required: true })
+  public userId!: Ref<User>;
 
   @prop({ required: true })
   public refreshToken!: string;
@@ -22,6 +32,10 @@ export class Session {
 
   @prop({ default: () => new Date(), expires: "30d" })
   public readonly expireAt?: Date;
+
+  public readonly createdAt?: Date;
+
+  public readonly updatedAt?: Date;
 }
 
 export const SessionModel = getModelForClass(Session);

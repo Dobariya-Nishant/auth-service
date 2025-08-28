@@ -1,5 +1,5 @@
 import { inject, injectable } from "tsyringe";
-import { sign, verify } from "jsonwebtoken";
+import { sign, verify, decode } from "jsonwebtoken";
 import {
   AuthType,
   ISessionRepository,
@@ -18,6 +18,14 @@ export default class SessionService implements ISessionService {
     @inject("ISessionRepository")
     private sessionRepository: ISessionRepository
   ) {}
+
+  private extractUserId(token: string): string {
+    const decoded = decode(token) as JwtPayload | null;
+
+    if (!decoded?.userId) throw new UnauthorizedError("token is not valid");
+
+    return decoded?.userId;
+  }
 
   private generateSessionTokens(jwtPayload: JwtPayload): Tokens {
     const accessToken = sign(
@@ -41,7 +49,7 @@ export default class SessionService implements ISessionService {
     return { accessToken, refreshToken };
   }
 
-  private verifySessionToken(token: string, isRefresh: boolean): JwtPayload {
+  verifySessionToken(token: string, isRefresh: boolean): JwtPayload {
     let key: string;
 
     if (isRefresh) {
@@ -58,7 +66,7 @@ export default class SessionService implements ISessionService {
   }
 
   get(query: MultiSessionQuery): Promise<Session[]> {
-    query.limit = 20;
+    if (!query?.limit) query.limit = 20;
     return this.sessionRepository.get(query);
   }
 
@@ -72,10 +80,26 @@ export default class SessionService implements ISessionService {
     return session;
   }
 
-  async verify(query: SessionQuery): Promise<JwtPayload> {
-    const session = await this.getOne(query);
+  async verify(refreshToken: string): Promise<JwtPayload> {
+    try {
+      const payload = this.verifySessionToken(refreshToken, true);
 
-    return this.verifySessionToken(session.refreshToken, true);
+      await this.getOne({
+        refreshToken,
+        userId: payload.userId,
+      });
+
+      return payload;
+    } catch (err) {
+      const userId = this.extractUserId(refreshToken);
+
+      await this.delete({
+        refreshToken,
+        userId,
+      });
+
+      throw err;
+    }
   }
 
   async create(payload: JwtPayload): Promise<Tokens> {
@@ -85,7 +109,7 @@ export default class SessionService implements ISessionService {
       userId: payload.userId,
       refreshToken: tokens.refreshToken,
       authType: payload.authType,
-      oauthToken: payload.authType,
+      oauthToken: payload.oauthToken,
     };
 
     await this.sessionRepository.create(session);

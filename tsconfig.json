@@ -8,6 +8,7 @@
     "paths": {
       "@/helpers/*": ["helpers/*"],
       "@/config/*": ["config/*"],
+      "@/middlewares/*": ["middlewares/*"],
       "@/*": ["modules/*"]
     },
     "esModuleInterop": true,

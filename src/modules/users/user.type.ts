@@ -17,7 +17,7 @@ export type MultiUserQuery = {
 };
 
 export interface IUserService {
-  getOne(query: UserQuery): Promise<User>;
+  getOne(query: UserQuery): Promise<User | null>;
 
   get(query: MultiUserQuery): Promise<Array<User>>;
 

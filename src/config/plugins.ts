@@ -30,8 +30,8 @@ export default async function registerPlugins(app: FastifyInstance) {
 
   await app.register(fastifyCookie, {
     secret: process.env.COOKIE_SECRET,
-    parseOptions: { httpOnly: true, secure: true },
-    hook: "preValidation",
+    parseOptions: { httpOnly: true, secure: true, signed: true },
+    hook: "onRequest",
   });
 
   await app.register(fastifyMultipart, {

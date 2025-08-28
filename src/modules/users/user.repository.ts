@@ -8,7 +8,11 @@ export default class UserRepository implements IUserRepository {
 
   getOne(query: UserQuery): Promise<User | null> {
     return UserModel.findOne({
-      $or: [{ userName: query.userName }, { email: query.email }],
+      $or: [
+        { userName: query.userName },
+        { email: query.email },
+        { _id: query.userId },
+      ],
     })
       .lean()
       .exec();

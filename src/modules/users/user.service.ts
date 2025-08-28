@@ -14,14 +14,8 @@ export default class UserService implements IUserService {
     @inject("IUserRepository") private userRepository: IUserRepository
   ) {}
 
-  async getOne(query: UserQuery): Promise<User> {
-    const user = await this.userRepository.getOne(query);
-
-    if (!user) {
-      throw new NotFoundError("User not found");
-    }
-
-    return user;
+  getOne(query: UserQuery): Promise<User | null> {
+    return this.userRepository.getOne(query);
   }
 
   get(query: MultiUserQuery): Promise<Array<User>> {

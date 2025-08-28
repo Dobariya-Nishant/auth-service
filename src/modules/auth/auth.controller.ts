@@ -1,62 +1,97 @@
 import { inject, injectable } from "tsyringe";
 import { FastifyReply, FastifyRequest } from "fastify";
 import { User } from "@/users/user.entity";
-import { IAuthService } from "@/auth/auth.types";
+import { IAuthService, Tokens } from "@/auth/auth.types";
 import { UnauthorizedError } from "@/helpers/errors";
+
+const ACCESS_COOKIE_OPTS = {
+  path: "/api/v1/",
+  httpOnly: true,
+  secure: true,
+  signed: true,
+};
+
+const REFRESH_COOKIE_OPTS = {
+  path: "/api/v1/auth/",
+  httpOnly: true,
+  secure: true,
+  signed: true,
+};
 
 @injectable()
 export default class AuthController {
   constructor(@inject("IAuthService") private authService: IAuthService) {}
 
-  async login(req: FastifyRequest, res: FastifyReply) {
-    const tokens = await this.authService.login(req.body as User);
+  private extractRefreshToken(req: FastifyRequest): string | null {
+    if (req.cookies?.refreshToken) {
+      const unsigned = req.unsignCookie(req.cookies.refreshToken);
 
+      if (unsigned.valid && unsigned.value) {
+        return unsigned.value;
+      }
+    }
+
+    if ((req?.body as any)?.refreshToken) {
+      return (req.body as any).refreshToken;
+    }
+
+    return null;
+  }
+
+  private authResponse(res: FastifyReply, tokens: Tokens) {
     return res
       .code(200)
-      .setCookie("accessToken", tokens.accessToken)
-      .setCookie("refreshToken", tokens.refreshToken)
+      .setCookie("accessToken", tokens.accessToken, ACCESS_COOKIE_OPTS)
+      .setCookie("refreshToken", tokens.refreshToken, REFRESH_COOKIE_OPTS)
       .send({
-        message: "login successful",
+        message: "Auth successful",
         data: {
           accessToken: tokens.accessToken,
           refreshToken: tokens.refreshToken,
         },
         statusCode: 200,
       });
+  }
+
+  async login(req: FastifyRequest, res: FastifyReply) {
+    const tokens = await this.authService.login(req.body as any);
+
+    return this.authResponse(res, tokens);
   }
 
   async signUp(req: FastifyRequest, res: FastifyReply) {
     const tokens = await this.authService.signUp(req.body as User);
 
-    return res
-      .code(200)
-      .setCookie("accessToken", tokens.accessToken)
-      .setCookie("refreshToken", tokens.refreshToken)
-      .send({
-        message: "sign-up successful",
-        data: {
-          accessToken: tokens.accessToken,
-          refreshToken: tokens.refreshToken,
-        },
-        statusCode: 200,
-      });
+    return this.authResponse(res, tokens);
+  }
+
+  async refresh(req: FastifyRequest, res: FastifyReply) {
+    const refreshToken = this.extractRefreshToken(req);
+
+    if (!refreshToken) {
+      throw new UnauthorizedError("Refresh Token not found!!");
+    }
+
+    const tokens = await this.authService.refresh(refreshToken);
+
+    return this.authResponse(res, tokens);
   }
 
   async logout(req: FastifyRequest, res: FastifyReply) {
     const userId = req?.user?._id;
 
-    const refreshToken = req.unsignCookie("refreshToken");
+    const refreshToken = this.extractRefreshToken(req);
 
-    if (!refreshToken.valid || !refreshToken.value) {
-      throw new UnauthorizedError("Session not exist or Expired");
+    if (!refreshToken) {
+      throw new UnauthorizedError("Refresh Token not found!!");
     }
 
-    await this.authService.logout(userId!, refreshToken.value);
+    await this.authService.logout(userId!, refreshToken);
 
     return res
       .code(200)
-      .clearCookie("refreshToken")
-      .clearCookie("accessToken")
+      .clearCookie("accessToken", ACCESS_COOKIE_OPTS)
+      .clearCookie("refreshToken", REFRESH_COOKIE_OPTS)
       .send({
         message: "logout successful",
         statusCode: 200,

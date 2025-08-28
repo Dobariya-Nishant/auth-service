@@ -2,6 +2,7 @@ import Fastify from "fastify";
 import registerPlugins from "@/config/plugins";
 import registerRoutes from "@/config/routes";
 import { User } from "@/users/user.entity";
+import { connectDB } from "@/helpers/db_connect";
 
 declare module "fastify" {
   interface FastifyRequest {
@@ -13,6 +14,8 @@ async function server() {
   const app = Fastify({ logger: true });
 
   await registerPlugins(app);
+
+  await connectDB();
 
   await registerRoutes(app);
 

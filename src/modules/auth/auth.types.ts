@@ -25,7 +25,7 @@ export type Tokens = {
 
 export type SessionQuery = {
   userId: string;
-  token: string;
+  refreshToken: string;
 };
 
 export type MultiSessionQuery = {
@@ -39,15 +39,23 @@ export interface IAuthService {
 
   signUp(data: User): Promise<Tokens>;
 
+  refresh(refreshToken: string): Promise<Tokens>;
+
+  verify(accessToken: string): Promise<User>;
+
   logout(userId: string, refreshToken: string): Promise<void>;
 }
 
 export interface ISessionService {
+  verifySessionToken(token: string, isRefresh: boolean): JwtPayload;
+
   get(query: MultiSessionQuery): Promise<Session[]>;
 
   getOne(query: SessionQuery): Promise<Session>;
 
   create(payload: JwtPayload): Promise<Tokens>;
+
+  verify(refreshToken: string): Promise<JwtPayload>;
 
   update(query: SessionQuery): Promise<Tokens>;
 

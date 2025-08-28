@@ -1,10 +1,6 @@
-import {
-  getModelForClass,
-  modelOptions,
-  mongoose,
-  prop,
-} from "@typegoose/typegoose";
+import { getModelForClass, modelOptions, prop } from "@typegoose/typegoose";
 import { UserRoles } from "@/users/user.type";
+import { Types } from "mongoose";
 
 @modelOptions({
   schemaOptions: {
@@ -13,7 +9,7 @@ import { UserRoles } from "@/users/user.type";
   },
 })
 export class User {
-  @prop({ required: true, default: () => new mongoose.Types.ObjectId() })
+  @prop({ required: true, default: () => new Types.ObjectId() })
   public readonly _id!: string;
 
   @prop()
