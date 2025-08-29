@@ -6,7 +6,7 @@ import {
   UserQuery,
 } from "@/users/user.type";
 import { User } from "@/users/user.entity";
-import { NotFoundError } from "@/helpers/errors";
+import { NotFoundError } from "@/core/utils/errors";
 
 @injectable()
 export default class UserService implements IUserService {

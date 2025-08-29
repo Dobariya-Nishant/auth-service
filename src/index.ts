@@ -1,8 +1,8 @@
 import Fastify from "fastify";
 import registerPlugins from "@/config/plugins";
-import registerRoutes from "@/config/routes";
+import registerRoutes from "@/routes";
 import { User } from "@/users/user.entity";
-import { connectDB } from "@/helpers/db_connect";
+import { connectDB } from "@/core/db/connection";
 
 declare module "fastify" {
   interface FastifyRequest {

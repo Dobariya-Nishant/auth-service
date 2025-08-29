@@ -11,7 +11,7 @@ import {
   ConflictError,
   NotFoundError,
   UnauthorizedError,
-} from "@/helpers/errors";
+} from "@/core/utils/errors";
 import { User } from "@/users/user.entity";
 import { IUserService } from "@/users/user.type";
 

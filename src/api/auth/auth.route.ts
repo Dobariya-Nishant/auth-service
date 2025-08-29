@@ -1,7 +1,7 @@
 import container from "@/config/dependency";
 import { FastifyInstance } from "fastify";
 import AuthController from "@/auth/auth.controller";
-import authenticate from "@/middlewares/auth";
+import authenticate from "@/core/middlewares/auth";
 
 export default async function authRoutes(app: FastifyInstance) {
   const authController = container.resolve<AuthController>("AuthController");

@@ -2,7 +2,7 @@ import { inject, injectable } from "tsyringe";
 import { FastifyReply, FastifyRequest } from "fastify";
 import { User } from "@/users/user.entity";
 import { IAuthService, Tokens } from "@/auth/auth.types";
-import { UnauthorizedError } from "@/helpers/errors";
+import { UnauthorizedError } from "@/core/utils/errors";
 
 const ACCESS_COOKIE_OPTS = {
   path: "/api/v1/",

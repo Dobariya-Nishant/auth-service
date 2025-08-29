@@ -10,7 +10,7 @@ import {
   Tokens,
 } from "@/auth/auth.types";
 import { Session } from "@/auth/session.entity";
-import { NotFoundError, UnauthorizedError } from "@/helpers/errors";
+import { NotFoundError, UnauthorizedError } from "@/core/utils/errors";
 
 @injectable()
 export default class SessionService implements ISessionService {

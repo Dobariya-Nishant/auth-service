@@ -8,8 +8,8 @@
     "paths": {
       "@/helpers/*": ["helpers/*"],
       "@/config/*": ["config/*"],
-      "@/middlewares/*": ["middlewares/*"],
-      "@/*": ["modules/*"]
+      "@/core/*": ["core/*"],
+      "@/*": ["api/*"]
     },
     "esModuleInterop": true,
     "skipLibCheck": true,

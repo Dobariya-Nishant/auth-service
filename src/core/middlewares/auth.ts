@@ -1,4 +1,4 @@
-import { UnauthorizedError } from "@/helpers/errors";
+import { UnauthorizedError } from "@/core/utils/errors";
 import { FastifyReply, FastifyRequest } from "fastify";
 import container from "@/config/dependency";
 import { IAuthService } from "@/auth/auth.types";
@@ -16,10 +16,6 @@ function extractAccessToken(req: FastifyRequest): string | null {
 
   if ((req?.headers as any)?.authorization) {
     return (req.headers as any).authorization;
-  }
-
-  if ((req?.body as any)?.accessToken) {
-    return (req.body as any).accessToken;
   }
 
   return null;
