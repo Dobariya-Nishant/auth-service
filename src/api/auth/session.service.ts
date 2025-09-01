@@ -11,6 +11,7 @@ import {
 } from "@/auth/auth.types";
 import { Session } from "@/auth/session.entity";
 import { NotFoundError, UnauthorizedError } from "@/core/utils/errors";
+import { SessionError } from "@/auth/auth.message";
 
 @injectable()
 export default class SessionService implements ISessionService {
@@ -22,7 +23,9 @@ export default class SessionService implements ISessionService {
   private extractUserId(token: string): string {
     const decoded = decode(token) as JwtPayload | null;
 
-    if (!decoded?.userId) throw new UnauthorizedError("token is not valid");
+    if (!decoded?.userId) {
+      throw new UnauthorizedError(SessionError.NotValid);
+    }
 
     return decoded?.userId;
   }
@@ -74,7 +77,7 @@ export default class SessionService implements ISessionService {
     const session = await this.sessionRepository.getOne(query);
 
     if (!session) {
-      throw new NotFoundError("Session Not Found or Expired!!");
+      throw new NotFoundError(SessionError.NotFound);
     }
 
     return session;
@@ -130,7 +133,7 @@ export default class SessionService implements ISessionService {
     const session = await this.sessionRepository.update(query, sessionUpdate);
 
     if (!session) {
-      throw new UnauthorizedError("Session not Found!");
+      throw new NotFoundError(SessionError.NotFound);
     }
 
     return tokens;

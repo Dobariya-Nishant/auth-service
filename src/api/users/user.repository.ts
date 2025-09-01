@@ -14,6 +14,7 @@ export default class UserRepository implements IUserRepository {
         { _id: query.userId },
       ],
     })
+      .select("-password")
       .lean()
       .exec();
   }
@@ -26,6 +27,7 @@ export default class UserRepository implements IUserRepository {
     }
 
     return UserModel.find(conditions)
+      .select("-password")
       .sort({ createdAt: -1 })
       .limit(query.limit || 0)
       .lean()

@@ -19,7 +19,7 @@ export default async function userRoutes(app: FastifyInstance) {
         properties: {
           userId: { type: "string" },
           userName: { type: "string" },
-          email: { type: "string" },
+          email: { type: "string", format: "email" },
           isMultiple: { type: "boolean" },
           lastCreatedAt: { type: "string", format: "date-time" },
         },
@@ -43,7 +43,7 @@ export default async function userRoutes(app: FastifyInstance) {
           profilePicture: { type: "string" },
           dateOfBirth: { type: "string", format: "date-time" },
           userName: { type: "string" },
-          email: { type: "string" },
+          email: { type: "string", format: "email" },
           password: { type: "string" },
         },
         required: ["userName", "email", "password"],
@@ -85,7 +85,7 @@ export default async function userRoutes(app: FastifyInstance) {
         properties: {
           userId: { type: "string" },
           userName: { type: "string" },
-          email: { type: "string" },
+          email: { type: "string", format: "email" },
         },
         additionalProperties: false,
       },

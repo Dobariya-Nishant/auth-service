@@ -1,5 +1,5 @@
-import container from "@/config/dependency";
 import { FastifyInstance } from "fastify";
+import container from "@/config/dependency";
 import AuthController from "@/auth/auth.controller";
 import authenticate from "@/core/middlewares/auth";
 
@@ -20,7 +20,7 @@ export default async function authRoutes(app: FastifyInstance) {
           profilePicture: { type: "string" },
           dateOfBirth: { type: "string", format: "date-time" },
           userName: { type: "string" },
-          email: { type: "string" },
+          email: { type: "string", format: "email" },
           password: { type: "string" },
         },
         required: ["userName", "email", "password"],
@@ -39,7 +39,7 @@ export default async function authRoutes(app: FastifyInstance) {
         type: "object",
         properties: {
           userName: { type: "string" },
-          email: { type: "string" },
+          email: { type: "string", format: "email" },
           password: { type: "string" },
         },
         additionalProperties: false,

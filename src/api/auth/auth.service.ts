@@ -14,6 +14,7 @@ import {
 } from "@/core/utils/errors";
 import { User } from "@/users/user.entity";
 import { IUserService } from "@/users/user.type";
+import { UserError } from "@/users/user.message";
 
 @injectable()
 export default class AuthService implements IAuthService {
@@ -22,18 +23,16 @@ export default class AuthService implements IAuthService {
     @inject("IUserService") private userService: IUserService
   ) {}
 
-  private async hashPassword(password: string): Promise<string> {
+  private hashPassword(password: string): Promise<string> {
     const saltRounds = 10;
-    const hashed = await hash(password, saltRounds);
-    return hashed;
+    return hash(password, saltRounds);
   }
 
-  private async verifyPassword(
+  private verifyPassword(
     password: string,
     hashedPassword: string
   ): Promise<boolean> {
-    const match = await compare(password, hashedPassword);
-    return match;
+    return compare(password, hashedPassword);
   }
 
   async login(data: LoginPayload): Promise<Tokens> {
@@ -43,7 +42,7 @@ export default class AuthService implements IAuthService {
     });
 
     if (!user?._id) {
-      throw new NotFoundError("User not found");
+      throw new NotFoundError(UserError.NotFound);
     }
 
     const isPasswordValid = await this.verifyPassword(
@@ -52,7 +51,7 @@ export default class AuthService implements IAuthService {
     );
 
     if (!isPasswordValid) {
-      throw new UnauthorizedError("credentials are not valid");
+      throw new UnauthorizedError(UserError.Unauthorized);
     }
 
     const tokens = await this.sessionService.create({
@@ -80,7 +79,7 @@ export default class AuthService implements IAuthService {
     const user = await this.userService.getOne({ userId: payload.userId });
 
     if (!user) {
-      throw new UnauthorizedError("User not Authorized");
+      throw new UnauthorizedError(UserError.Unauthorized);
     }
 
     return user;
@@ -93,7 +92,7 @@ export default class AuthService implements IAuthService {
     });
 
     if (isUser) {
-      throw new ConflictError("userName or email already in use");
+      throw new ConflictError(UserError.Conflict);
     }
 
     const hashedPassword = await this.hashPassword(data.password);

@@ -7,6 +7,7 @@ import {
 } from "@/users/user.type";
 import { User } from "@/users/user.entity";
 import { NotFoundError } from "@/core/utils/errors";
+import { UserError } from "@/users/user.message";
 
 @injectable()
 export default class UserService implements IUserService {
@@ -26,7 +27,7 @@ export default class UserService implements IUserService {
     const user = await this.userRepository.update(query, data);
 
     if (!user) {
-      throw new NotFoundError("User not found");
+      throw new NotFoundError(UserError.NotFound);
     }
 
     return user;
@@ -40,7 +41,7 @@ export default class UserService implements IUserService {
     const user = await this.userRepository.delete(query);
 
     if (!user) {
-      throw new NotFoundError("User not found");
+      throw new NotFoundError(UserError.NotFound);
     }
 
     return user;

@@ -1,6 +1,6 @@
 import Fastify from "fastify";
 import registerPlugins from "@/config/plugins";
-import registerRoutes from "@/routes";
+import registerRoutes from "@/index";
 import { User } from "@/users/user.entity";
 import { connectDB } from "@/core/db/connection";
 

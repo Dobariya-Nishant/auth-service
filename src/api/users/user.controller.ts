@@ -1,7 +1,7 @@
 import { inject, injectable } from "tsyringe";
 import { FastifyRequest, FastifyReply } from "fastify";
 import { IUserService, UserQuery } from "@/users/user.type";
-import { UserSuccess } from "@/users/user.responce";
+import { UserSuccess } from "@/users/user.message";
 
 @injectable()
 export default class UserController {

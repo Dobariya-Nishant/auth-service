@@ -1,8 +1,9 @@
-import { inject, injectable } from "tsyringe";
 import { FastifyReply, FastifyRequest } from "fastify";
+import { inject, injectable } from "tsyringe";
 import { User } from "@/users/user.entity";
 import { IAuthService, Tokens } from "@/auth/auth.types";
 import { UnauthorizedError } from "@/core/utils/errors";
+import { AuthError, AuthSuccess } from "@/auth/auth.message";
 
 const ACCESS_COOKIE_OPTS = {
   path: "/api/v1/",
@@ -44,7 +45,7 @@ export default class AuthController {
       .setCookie("accessToken", tokens.accessToken, ACCESS_COOKIE_OPTS)
       .setCookie("refreshToken", tokens.refreshToken, REFRESH_COOKIE_OPTS)
       .send({
-        message: "Auth successful",
+        message: AuthSuccess.Login,
         data: {
           accessToken: tokens.accessToken,
           refreshToken: tokens.refreshToken,
@@ -69,7 +70,7 @@ export default class AuthController {
     const refreshToken = this.extractRefreshToken(req);
 
     if (!refreshToken) {
-      throw new UnauthorizedError("Refresh Token not found!!");
+      throw new UnauthorizedError(AuthError.RefreshNotFound);
     }
 
     const tokens = await this.authService.refresh(refreshToken);
@@ -83,7 +84,7 @@ export default class AuthController {
     const refreshToken = this.extractRefreshToken(req);
 
     if (!refreshToken) {
-      throw new UnauthorizedError("Refresh Token not found!!");
+      throw new UnauthorizedError(AuthError.RefreshNotFound);
     }
 
     await this.authService.logout(userId!, refreshToken);
@@ -93,7 +94,7 @@ export default class AuthController {
       .clearCookie("accessToken", ACCESS_COOKIE_OPTS)
       .clearCookie("refreshToken", REFRESH_COOKIE_OPTS)
       .send({
-        message: "logout successful",
+        message: AuthSuccess.Logout,
         statusCode: 200,
       });
   }
