@@ -2,6 +2,7 @@ import { UnauthorizedError } from "@/core/utils/errors";
 import { FastifyReply, FastifyRequest } from "fastify";
 import container from "@/config/dependency";
 import { IAuthService } from "@/auth/auth.types";
+import { UserError } from "@/users/user.message";
 
 const authService = container.resolve<IAuthService>("IAuthService");
 
@@ -28,7 +29,7 @@ export default async function authenticate(
   const accessToken = extractAccessToken(req);
 
   if (!accessToken) {
-    throw new UnauthorizedError("Missing Authorization header");
+    throw new UnauthorizedError(UserError.Unauthorized);
   }
 
   const user = await authService.verify(accessToken);

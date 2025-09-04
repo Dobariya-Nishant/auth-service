@@ -7,11 +7,9 @@
     "prepare": "npx ts-patch install -s",
     "dev": "ts-node-dev -r ts-patch src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js"
+    "start": "node dist/src/index.js",
+    "test": "npm run build && node --env-file=.env --test  dist/test/**/*.test.js "
   },
-  "target": "ESNext",
-  "module": "ESNext",
-  "moduleResolution": "NodeNext",
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -36,6 +34,7 @@
     "@types/bcrypt": "^6.0.0",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.3.0",
+    "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "ts-patch": "^3.3.0",
     "tsconfig-paths": "^4.2.0",

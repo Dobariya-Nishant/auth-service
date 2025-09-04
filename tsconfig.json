@@ -1,15 +1,17 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
+    "target": "ES2022",
     "module": "CommonJS",
     "moduleResolution": "Node",
+    "types": ["node"],
     "outDir": "./dist",
-    "baseUrl": "src",
+    "baseUrl": ".",
     "paths": {
-      "@/helpers/*": ["helpers/*"],
-      "@/config/*": ["config/*"],
-      "@/core/*": ["core/*"],
-      "@/*": ["api/*"]
+      "@/test/*": ["test/*"],
+      "@/helpers/*": ["src/helpers/*"],
+      "@/config/*": ["src/config/*"],
+      "@/core/*": ["src/core/*"],
+      "@/*": ["src/api/*"]
     },
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -30,5 +32,5 @@
       }
     ]
   },
-  "include": ["src"]
+  "include": ["src", "test"]
 }

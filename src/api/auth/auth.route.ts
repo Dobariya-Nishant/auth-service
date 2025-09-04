@@ -19,7 +19,7 @@ export default async function authRoutes(app: FastifyInstance) {
           fullName: { type: "string" },
           profilePicture: { type: "string" },
           dateOfBirth: { type: "string", format: "date-time" },
-          userName: { type: "string" },
+          userName: { type: "string", minLength: 3, maxLength: 20 },
           email: { type: "string", format: "email" },
           password: { type: "string" },
         },
@@ -38,7 +38,7 @@ export default async function authRoutes(app: FastifyInstance) {
       body: {
         type: "object",
         properties: {
-          userName: { type: "string" },
+          userName: { type: "string", minLength: 3, maxLength: 20 },
           email: { type: "string", format: "email" },
           password: { type: "string" },
         },

@@ -1,34 +1,38 @@
-import { injectable } from "tsyringe";
-import { Session, SessionModel } from "@/auth/session.entity";
+import { inject, injectable } from "tsyringe";
+import { Session } from "@/auth/session.entity";
 import {
   ISessionRepository,
   MultiSessionQuery,
   SessionQuery,
 } from "@/auth/auth.types";
+import { Model } from "mongoose";
 
 @injectable()
 export default class SessionRepository implements ISessionRepository {
-  constructor() {}
+  constructor(
+    @inject("SessionModel") private readonly sessionModel: Model<Session>
+  ) {}
 
   getOne(query: SessionQuery): Promise<Session | null> {
-    return SessionModel.findOne(query).lean().exec();
+    return this.sessionModel.findOne(query).lean().exec();
   }
 
   get(query: MultiSessionQuery): Promise<Array<Session>> {
-    return SessionModel.find(query).lean().exec();
+    return this.sessionModel.find(query).lean().exec();
   }
 
   create(data: Session): Promise<Session> {
-    return SessionModel.create(data);
+    return this.sessionModel.create(data);
   }
 
   update(query: SessionQuery, data: Partial<Session>): Promise<Session | null> {
-    return SessionModel.findOneAndUpdate(query, data, { new: true })
+    return this.sessionModel
+      .findOneAndUpdate(query, data, { new: true })
       .lean()
       .exec();
   }
 
   async delete(query: SessionQuery): Promise<void> {
-    await SessionModel.deleteOne(query).exec();
+    await this.sessionModel.deleteOne(query).exec();
   }
 }

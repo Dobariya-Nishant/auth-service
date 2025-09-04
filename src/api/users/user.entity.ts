@@ -9,7 +9,7 @@ import { Types } from "mongoose";
   },
 })
 export class User {
-  @prop({ required: true, default: () => new Types.ObjectId() })
+  @prop({ default: () => new Types.ObjectId() })
   public readonly _id!: string;
 
   @prop()

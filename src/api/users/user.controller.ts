@@ -22,11 +22,15 @@ export default class UserController {
       req.query as any;
 
     if (!isMultiple) {
-      const user = await this.userService.getOne({
-        userId: userId || req?.user?._id,
-        userName,
-        email,
-      });
+      const query: any = {};
+      if (!userId && !userName && !email) {
+        query.userId = req?.user?._id;
+      } else {
+        query.userId = userId;
+        query.userName = userName;
+        query.email = email;
+      }
+      const user = await this.userService.getOne(query);
 
       return res.code(200).send({
         message: UserSuccess.SentOne,

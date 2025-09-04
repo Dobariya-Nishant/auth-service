@@ -7,6 +7,8 @@ import SessionService from "@/auth/session.service";
 import AuthService from "@/auth/auth.service";
 import UserRepository from "@/users/user.repository";
 import SessionRepository from "@/auth/session.repository";
+import { SessionModel } from "@/auth/session.entity";
+import { UserModel } from "@/users/user.entity";
 
 // controllers registation
 container.register("AuthController", {
@@ -33,6 +35,13 @@ container.register("IUserRepository", {
 });
 container.register("ISessionRepository", {
   useClass: SessionRepository,
+});
+
+container.register("UserModel", {
+  useValue: UserModel,
+});
+container.register("SessionModel", {
+  useValue: SessionModel,
 });
 
 export default container;

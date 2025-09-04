@@ -1,20 +1,21 @@
-import { injectable } from "tsyringe";
+import { inject, injectable } from "tsyringe";
 import { UserQuery, IUserRepository, MultiUserQuery } from "@/users/user.type";
-import { User, UserModel } from "@/users/user.entity";
+import { User } from "@/users/user.entity";
+import { Model } from "mongoose";
 
 @injectable()
 export default class UserRepository implements IUserRepository {
-  constructor() {}
+  constructor(@inject("UserModel") private readonly userModel: Model<User>) {}
 
   getOne(query: UserQuery): Promise<User | null> {
-    return UserModel.findOne({
-      $or: [
-        { userName: query.userName },
-        { email: query.email },
-        { _id: query.userId },
-      ],
-    })
-      .select("-password")
+    return this.userModel
+      .findOne({
+        $or: [
+          { userName: query.userName },
+          { email: query.email },
+          { _id: query.userId },
+        ],
+      })
       .lean()
       .exec();
   }
@@ -26,7 +27,8 @@ export default class UserRepository implements IUserRepository {
       conditions.createdAt = { $lt: query.lastCreatedAt };
     }
 
-    return UserModel.find(conditions)
+    return this.userModel
+      .find(conditions)
       .select("-password")
       .sort({ createdAt: -1 })
       .limit(query.limit || 0)
@@ -35,14 +37,17 @@ export default class UserRepository implements IUserRepository {
   }
 
   create(data: User): Promise<User> {
-    return UserModel.create(data);
+    return this.userModel.create(data);
   }
 
   update(query: UserQuery, data: Partial<User>): Promise<User | null> {
-    return UserModel.findOneAndUpdate(query, data, { new: true }).lean().exec();
+    return this.userModel
+      .findOneAndUpdate(query, data, { new: true })
+      .lean()
+      .exec();
   }
 
   delete(query: UserQuery): Promise<User | null> {
-    return UserModel.findOneAndDelete(query).lean().exec();
+    return this.userModel.findOneAndDelete(query).lean().exec();
   }
 }

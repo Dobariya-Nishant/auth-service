@@ -2,7 +2,7 @@ export default {
   type: "object",
   required: [
     "PORT",
-    "DB_URL",
+    "MONGO_URI",
     "ORIGIN",
     "COOKIE_SECRET",
     "PUBLIC_REFRESH_TOKEN_KEY",
@@ -15,7 +15,7 @@ export default {
   ],
   properties: {
     PORT: { type: "string" },
-    DB_URL: { type: "string" },
+    MONGO_URI: { type: "string" },
     ORIGIN: { type: "string" },
     COOKIE_SECRET: { type: "string" },
     GOOGLE_CLIENT_ID: { type: "string" },
