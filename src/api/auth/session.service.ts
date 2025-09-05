@@ -31,6 +31,8 @@ export default class SessionService implements ISessionService {
   }
 
   private generateSessionTokens(jwtPayload: JwtPayload): Tokens {
+    //@ts-ignore
+    jwtPayload.jti = crypto.randomUUID();
     const accessToken = sign(
       jwtPayload,
       process.env.PRIVATE_ACCESS_TOKEN_KEY as string,

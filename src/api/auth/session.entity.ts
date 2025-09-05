@@ -21,7 +21,7 @@ export class Session {
   @prop({ ref: () => User, required: true })
   public userId!: Ref<User>;
 
-  @prop({ required: true })
+  @prop({ required: true, unique: true })
   public refreshToken!: string;
 
   @prop({ enum: AuthType, default: AuthType.LOCAL })

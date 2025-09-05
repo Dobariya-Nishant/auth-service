@@ -112,7 +112,7 @@ export default class AuthService implements IAuthService {
   async logout(userId: string, refreshToken: string): Promise<void> {
     await this.sessionService.delete({
       userId,
-      refreshToken: refreshToken,
+      refreshToken,
     });
   }
 }
