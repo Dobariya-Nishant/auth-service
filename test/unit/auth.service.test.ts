@@ -254,6 +254,6 @@ describe("AuthService", () => {
   });
 
   after(async () => {
-    // await disconnectTestDB("authservice");
+    await disconnectTestDB("authservice");
   });
 });
