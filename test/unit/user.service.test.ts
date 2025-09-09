@@ -10,9 +10,10 @@ import { createUserFixture } from "@/test/mock/user.mock";
 
 describe("UserService", () => {
   let userService: IUserService;
+  const prefix = "user_service";
 
   before(async () => {
-    const conn = await connectTestDB("user_service");
+    const conn = await connectTestDB(prefix);
     const child = container.createChildContainer();
     deleteModelWithClass(User);
     child.register("UserModel", {
@@ -24,7 +25,7 @@ describe("UserService", () => {
   });
 
   test("should throw error if email is missing", async () => {
-    const userData = createUserFixture("user_service");
+    const userData = createUserFixture(prefix);
     userData.email = "";
 
     await assert.rejects(
@@ -41,7 +42,7 @@ describe("UserService", () => {
   });
 
   test("should throw error if username is missing", async () => {
-    const userData = createUserFixture("user_service");
+    const userData = createUserFixture(prefix);
     userData.userName = "";
 
     await assert.rejects(
@@ -58,7 +59,7 @@ describe("UserService", () => {
   });
 
   test("should throw error if password is missing", async () => {
-    const userData = createUserFixture("user_service");
+    const userData = createUserFixture(prefix);
     userData.password = "";
 
     await assert.rejects(
@@ -75,7 +76,7 @@ describe("UserService", () => {
   });
 
   test("should create user successfully", async () => {
-    const userData = createUserFixture("user_service");
+    const userData = createUserFixture(prefix);
 
     const user = await userService.create(userData);
 
@@ -87,7 +88,7 @@ describe("UserService", () => {
   });
 
   test("should throw duplicate key error if username already exists", async () => {
-    const userData = createUserFixture("user_service");
+    const userData = createUserFixture(prefix);
 
     await assert.rejects(
       async () => {
@@ -103,6 +104,6 @@ describe("UserService", () => {
   });
 
   after(async () => {
-    await disconnectTestDB("user_service");
+    await disconnectTestDB(prefix);
   });
 });

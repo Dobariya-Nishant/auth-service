@@ -1,4 +1,5 @@
 import { AuthType, JwtPayload, LoginPayload } from "@/auth/auth.types";
+import { getNewObjectId } from "@/core/utils/objectid";
 import { User } from "@/users/user.entity";
 
 export function createUserFixture(suffix: string = "sample"): User {
@@ -20,10 +21,10 @@ export function createLoginFixture(suffix: string = "sample"): LoginPayload {
   };
 }
 
-export function createJwtPayload(suffix: string = "sample"): JwtPayload {
+export function createJwtPayload(): JwtPayload {
   return {
-    userId: `${suffix}_test`,
+    userId: getNewObjectId(),
     authType: AuthType.LOCAL,
-    oauthToken: "",
+    oauthToken: "test",
   };
 }

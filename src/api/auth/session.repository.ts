@@ -33,7 +33,6 @@ export default class SessionRepository implements ISessionRepository {
   }
 
   async delete(query: SessionQuery): Promise<void> {
-    const ses = await this.sessionModel.findOneAndDelete(query).exec();
-    console.log("ses", ses);
+    await this.sessionModel.findOneAndDelete(query).exec();
   }
 }

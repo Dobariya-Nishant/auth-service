@@ -1,9 +1,9 @@
-import { connect, disconnect } from "mongoose";
-import mongoose, { Connection } from "mongoose";
+import { mongoose } from "@typegoose/typegoose";
+import { Connection } from "mongoose";
 
 export async function connectDB(dbName = "test") {
   try {
-    await connect(
+    await mongoose.connect(
       process.env.MONGO_URI || `mongodb://localhost:27017/${dbName}`
     );
     console.log("✅ MongoDB connected");
@@ -15,7 +15,7 @@ export async function connectDB(dbName = "test") {
 
 export async function disconnectDB() {
   try {
-    await disconnect();
+    await mongoose.disconnect();
     console.log("🔌 MongoDB disconnected");
   } catch (err) {
     console.error("❌ Error disconnecting MongoDB:", err);

@@ -16,9 +16,10 @@ describe("AuthService", () => {
   let authService: IAuthService;
   let userService: IUserService;
   let sessionService: ISessionService;
+  const prefix = "auth_service";
 
   before(async () => {
-    const conn = await connectTestDB("authservice");
+    const conn = await connectTestDB(prefix);
     const child = container.createChildContainer();
     deleteModelWithClass(User);
     deleteModelWithClass(Session);
@@ -37,8 +38,8 @@ describe("AuthService", () => {
     sessionService = child.resolve<ISessionService>("ISessionService");
   });
 
-  test("sign-up validation", async () => {
-    const userData = createUserFixture("auth_service");
+  test("should fail to sign up when required fields are missing", async () => {
+    const userData = createUserFixture(prefix);
     userData.email = "";
     userData.userName = "";
 
@@ -47,7 +48,6 @@ describe("AuthService", () => {
         await authService.signUp(userData);
       },
       (err: any) => {
-        console.log(err.errors.userName);
         assert.strictEqual(err.name, "ValidationError");
         assert.ok(err.errors.email);
         assert.strictEqual(err.errors.email.kind, "required");
@@ -58,8 +58,8 @@ describe("AuthService", () => {
     );
   });
 
-  test("should sign-up successfully", async () => {
-    const userData = createUserFixture("auth_service");
+  test("should successfully sign up a new user and return tokens", async () => {
+    const userData = createUserFixture(prefix);
     const password = userData.password;
 
     const tokens = await authService.signUp(userData);
@@ -87,8 +87,8 @@ describe("AuthService", () => {
     assert.ok(user?.fullName, "fullName not added in user");
   });
 
-  test("should hash password before saving", async () => {
-    const userData = createUserFixture("auth_service");
+  test("should hash user password before persisting", async () => {
+    const userData = createUserFixture(prefix);
 
     const user = await userService.getOne({ email: userData.email });
 
@@ -97,8 +97,8 @@ describe("AuthService", () => {
     assert.ok(isMatch, "Password hash should match the original password");
   });
 
-  test("should throw error if username is already taken", async () => {
-    const userData = createUserFixture("auth_service");
+  test("should fail to sign up when username already exists", async () => {
+    const userData = createUserFixture(prefix);
     userData.email = "";
 
     await assert.rejects(
@@ -114,8 +114,8 @@ describe("AuthService", () => {
     );
   });
 
-  test("should throw error if email is already taken", async () => {
-    const userData = createUserFixture("auth_service");
+  test("should fail to sign up when email already exists", async () => {
+    const userData = createUserFixture(prefix);
     userData.userName = "";
 
     await assert.rejects(
@@ -131,8 +131,8 @@ describe("AuthService", () => {
     );
   });
 
-  test("should not able login with wrong password", async () => {
-    const loginPayload = createUserFixture("auth_service");
+  test("should fail to log in with incorrect password", async () => {
+    const loginPayload = createUserFixture(prefix);
     loginPayload.password = "1234";
 
     await assert.rejects(
@@ -148,8 +148,24 @@ describe("AuthService", () => {
     );
   });
 
-  test("should not able login with wrong email", async () => {
-    const loginPayload = createLoginFixture("auth_service");
+  test("should fail to log in with both email and username missing", async () => {
+    const loginPayload = createLoginFixture(prefix);
+    loginPayload.email = "";
+    loginPayload.userName = "";
+
+    await assert.rejects(
+      async () => authService.login(loginPayload),
+      (err: any) => {
+        assert.strictEqual(err.name, "NotFoundError");
+        assert.strictEqual(err.statusCode, 404);
+        assert.strictEqual(err.message, UserError.NotFound);
+        return true;
+      }
+    );
+  });
+
+  test("should fail to log in with non-existing email", async () => {
+    const loginPayload = createLoginFixture(prefix);
     loginPayload.email = "test@example.co";
     delete loginPayload.userName;
 
@@ -166,8 +182,8 @@ describe("AuthService", () => {
     );
   });
 
-  test("should not able login with wrong username", async () => {
-    const loginPayload = createLoginFixture("auth_service");
+  test("should fail to log in with non-existing username", async () => {
+    const loginPayload = createLoginFixture(prefix);
     loginPayload.email = "";
     loginPayload.userName = "testuse";
 
@@ -184,8 +200,8 @@ describe("AuthService", () => {
     );
   });
 
-  test("should login successfully with valid username & password", async () => {
-    const loginPayload = createLoginFixture("auth_service");
+  test("should log in successfully using valid username & password", async () => {
+    const loginPayload = createLoginFixture(prefix);
     loginPayload.email = "";
 
     const tokens = await authService.login(loginPayload);
@@ -199,8 +215,8 @@ describe("AuthService", () => {
     assert.ok(payload);
   });
 
-  test("should login successfully with valid email & password", async () => {
-    const loginPayload = createLoginFixture("auth_service");
+  test("should log in successfully using valid email & password", async () => {
+    const loginPayload = createLoginFixture(prefix);
     loginPayload.userName = "";
 
     const tokens = await authService.login(loginPayload);
@@ -214,8 +230,8 @@ describe("AuthService", () => {
     assert.ok(payload);
   });
 
-  test("ckeck login and logout flow", async () => {
-    const loginPayload = createLoginFixture("auth_service");
+  test("should create a session on login and invalidate it on logout", async () => {
+    const loginPayload = createLoginFixture(prefix);
     loginPayload.userName = "";
 
     const user = await userService.getOne({ email: loginPayload.email });
@@ -234,15 +250,14 @@ describe("AuthService", () => {
 
     assert.strictEqual(tokens.refreshToken, session.refreshToken);
 
-    // await authService.logout(user._id, tokens.refreshToken);
+    await authService.logout(user._id, tokens.refreshToken);
 
     await assert.rejects(
       async () => {
-        const session = await sessionService.getOne({
+        await sessionService.getOne({
           userId: user._id,
           refreshToken: tokens.refreshToken,
         });
-        console.log("session", session);
       },
       (err: any) => {
         assert.strictEqual(err.name, "NotFoundError");
@@ -254,6 +269,6 @@ describe("AuthService", () => {
   });
 
   after(async () => {
-    await disconnectTestDB("authservice");
+    await disconnectTestDB(prefix);
   });
 });
