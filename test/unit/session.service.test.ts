@@ -1,26 +1,17 @@
 import { test, before, after, describe } from "node:test";
 import assert from "node:assert";
-import container from "@/config/dependency";
-import { Session } from "@/auth/session.entity";
-import { connectTestDB, disconnectTestDB } from "@/core/db/connection";
+import { disconnectTestDB } from "@/core/db/connection";
 import { ISessionService } from "@/auth/auth.types";
-import { deleteModelWithClass, getModelForClass } from "@typegoose/typegoose";
 import { createJwtPayload } from "@/test/mock/user.mock";
 import { SessionError } from "@/auth/auth.message";
+import { getContainer } from "@/test/mock/childcontainer";
 
 describe("SessionService", () => {
   let sessionService: ISessionService;
   const prefix = "session_service";
 
   before(async () => {
-    const conn = await connectTestDB(prefix);
-    const child = container.createChildContainer();
-    deleteModelWithClass(Session);
-    child.register("SessionModel", {
-      useValue: getModelForClass(Session, {
-        existingConnection: conn,
-      }),
-    });
+    const child = await getContainer(prefix);
     sessionService = child.resolve<ISessionService>("ISessionService");
   });
 

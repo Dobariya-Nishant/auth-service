@@ -1,16 +1,13 @@
 import { test, before, after, describe } from "node:test";
 import assert from "node:assert";
-import container from "@/config/dependency";
-import { User } from "@/users/user.entity";
-import { Session } from "@/auth/session.entity";
-import { connectTestDB, disconnectTestDB } from "@/core/db/connection";
+import { disconnectTestDB } from "@/core/db/connection";
 import { IAuthService, ISessionService } from "@/auth/auth.types";
 import { IUserService } from "@/users/user.type";
 import { compare } from "bcrypt";
 import { UserError } from "@/users/user.message";
-import { deleteModelWithClass, getModelForClass } from "@typegoose/typegoose";
 import { createLoginFixture, createUserFixture } from "@/test/mock/user.mock";
 import { SessionError } from "@/auth/auth.message";
+import { getContainer } from "@/test/mock/childcontainer";
 
 describe("AuthService", () => {
   let authService: IAuthService;
@@ -19,20 +16,7 @@ describe("AuthService", () => {
   const prefix = "auth_service";
 
   before(async () => {
-    const conn = await connectTestDB(prefix);
-    const child = container.createChildContainer();
-    deleteModelWithClass(User);
-    deleteModelWithClass(Session);
-    child.register("UserModel", {
-      useValue: getModelForClass(User, {
-        existingConnection: conn,
-      }),
-    });
-    child.register("SessionModel", {
-      useValue: getModelForClass(Session, {
-        existingConnection: conn,
-      }),
-    });
+    const child = await getContainer(prefix);
     authService = child.resolve<IAuthService>("IAuthService");
     userService = child.resolve<IUserService>("IUserService");
     sessionService = child.resolve<ISessionService>("ISessionService");

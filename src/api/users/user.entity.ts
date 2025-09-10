@@ -22,10 +22,10 @@ export class User {
   public dateOfBirth?: Date;
 
   @prop({ required: true, unique: true })
-  public userName!: string;
+  public email!: string;
 
   @prop({ required: true, unique: true })
-  public email!: string;
+  public userName!: string;
 
   @prop({ required: true, enum: UserRoles, default: UserRoles.USER })
   public role!: UserRoles;
