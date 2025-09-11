@@ -15,7 +15,7 @@ describe("UserService", () => {
     userService = child.resolve<IUserService>(UserService);
   });
 
-  test("should throw error if required fields are missing", async () => {
+  test("throws a ValidationError when creating a user with missing required fields", async () => {
     const userData = createUserFixture(prefix);
     userData.email = "";
     userData.userName = "";
@@ -38,7 +38,7 @@ describe("UserService", () => {
     );
   });
 
-  test("should create user successfully", async () => {
+  test("creates a new user with valid data", async () => {
     const userData = createUserFixture(prefix);
 
     const user = await userService.create(userData);
@@ -51,7 +51,7 @@ describe("UserService", () => {
     assert.partialDeepStrictEqual(user.dateOfBirth, userData.dateOfBirth);
   });
 
-  test("should get created user with email and userName", async () => {
+  test("retrieves an existing user by email and username", async () => {
     const userData = createUserFixture(prefix);
 
     const user = await userService.getOne({
@@ -68,7 +68,7 @@ describe("UserService", () => {
     assert.partialDeepStrictEqual(user.dateOfBirth, userData.dateOfBirth);
   });
 
-  test("should throw duplicate key error if username already exists", async () => {
+  test("fails to create a user when username already exists (duplicate key)", async () => {
     const userData = createUserFixture(prefix);
     userData.email = "test@email.com";
 
@@ -85,7 +85,7 @@ describe("UserService", () => {
     );
   });
 
-  test("should throw duplicate key error if email already exists", async () => {
+  test("fails to create a user when email already exists (duplicate key)", async () => {
     const userData = createUserFixture(prefix);
     userData.userName = "test_user";
 
@@ -102,7 +102,7 @@ describe("UserService", () => {
     );
   });
 
-  test("should update user", async () => {
+  test("updates an existing user's details", async () => {
     const userData = createUserFixture(prefix);
     const updateData = createUserFixture("update");
 
@@ -123,7 +123,7 @@ describe("UserService", () => {
     );
   });
 
-  test("should delete user from db", async () => {
+  test("deletes a user and ensures they cannot be retrieved", async () => {
     const userData = createUserFixture("update");
 
     await userService.delete({ email: userData.email });

@@ -4,11 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "prepare": "npx ts-patch install -s",
+    "prepare": "ts-patch install -s",
     "dev": "ts-node-dev -r ts-patch src/index.ts",
-    "build": "tsc",
+    "build": "npm run prepare && tsc",
     "start": "node dist/src/index.js",
-    "test": "npm run build && node --env-file=.env --test  dist/test/**/*.test.js "
+    "test": "npm run prepare && npm run build && npm run test:run",
+    "test:run": "node --test dist/test/**/*.test.js"
   },
   "keywords": [],
   "author": "",

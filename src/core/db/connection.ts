@@ -3,9 +3,15 @@ import { Connection } from "mongoose";
 
 export async function connectDB(dbName = "test") {
   try {
-    await mongoose.connect(
-      process.env.MONGO_URI || `mongodb://localhost:27017/${dbName}`
-    );
+    const mongoHost = process.env.MONGO_HOST || "db";
+    const mongoUser = process.env.MONGO_USER || "admin";
+    const mongoPassword = process.env.MONGO_PASSWORD || "testx";
+    const mongoPort = process.env.MONGO_PORT || "27017";
+
+    const uri = `mongodb://${mongoUser}:${mongoPassword}@${mongoHost}:${mongoPort}/${dbName}?authSource=admin`;
+    console.log("process.env.MONGO_URI", process.env.MONGO_URI);
+
+    await mongoose.connect(uri);
     console.log("✅ MongoDB connected");
   } catch (err) {
     console.error("❌ MongoDB connection error:", err);
@@ -28,8 +34,12 @@ export async function connectTestDB(dbName: string): Promise<Connection> {
   if (connections[dbName]) {
     return connections[dbName];
   }
+  const mongoHost = process.env.MONGO_HOST || "db";
+  const mongoUser = process.env.MONGO_USER || "admin";
+  const mongoPassword = process.env.MONGO_PASSWORD || "testx";
+  const mongoPort = process.env.MONGO_PORT || "27017";
 
-  const uri = `mongodb://localhost:27017/${dbName}`;
+  const uri = `mongodb://${mongoUser}:${mongoPassword}@${mongoHost}:${mongoPort}/${dbName}?authSource=admin`;
   const conn = mongoose.createConnection(uri);
 
   await conn.asPromise();

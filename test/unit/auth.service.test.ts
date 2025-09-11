@@ -22,7 +22,7 @@ describe("AuthService", () => {
     sessionService = child.resolve<ISessionService>("ISessionService");
   });
 
-  test("should fail to sign up when required fields are missing", async () => {
+  test("throws ValidationError when signing up with missing required fields", async () => {
     const userData = createUserFixture(prefix);
     userData.email = "";
     userData.userName = "";
@@ -42,7 +42,7 @@ describe("AuthService", () => {
     );
   });
 
-  test("should successfully sign up a new user and return tokens", async () => {
+  test("signs up a new user and returns access/refresh tokens", async () => {
     const userData = createUserFixture(prefix);
     const password = userData.password;
 
@@ -71,7 +71,7 @@ describe("AuthService", () => {
     assert.ok(user?.fullName, "fullName not added in user");
   });
 
-  test("should hash user password before persisting", async () => {
+  test("hashes the user password before persisting to the database", async () => {
     const userData = createUserFixture(prefix);
 
     const user = await userService.getOne({ email: userData.email });
@@ -81,7 +81,7 @@ describe("AuthService", () => {
     assert.ok(isMatch, "Password hash should match the original password");
   });
 
-  test("should fail to sign up when username already exists", async () => {
+  test("throws ConflictError when signing up with an existing username", async () => {
     const userData = createUserFixture(prefix);
     userData.email = "";
 
@@ -98,7 +98,7 @@ describe("AuthService", () => {
     );
   });
 
-  test("should fail to sign up when email already exists", async () => {
+  test("throws ConflictError when signing up with an existing email", async () => {
     const userData = createUserFixture(prefix);
     userData.userName = "";
 
@@ -115,7 +115,7 @@ describe("AuthService", () => {
     );
   });
 
-  test("should fail to log in with incorrect password", async () => {
+  test("throws UnauthorizedError when logging in with incorrect password", async () => {
     const loginPayload = createUserFixture(prefix);
     loginPayload.password = "1234";
 
@@ -132,7 +132,7 @@ describe("AuthService", () => {
     );
   });
 
-  test("should fail to log in with both email and username missing", async () => {
+  test("throws NotFoundError when logging in with missing email and username", async () => {
     const loginPayload = createLoginFixture(prefix);
     loginPayload.email = "";
     loginPayload.userName = "";
@@ -148,7 +148,7 @@ describe("AuthService", () => {
     );
   });
 
-  test("should fail to log in with non-existing email", async () => {
+  test("throws NotFoundError when logging in with a non-existing email", async () => {
     const loginPayload = createLoginFixture(prefix);
     loginPayload.email = "test@example.co";
     delete loginPayload.userName;
@@ -166,7 +166,7 @@ describe("AuthService", () => {
     );
   });
 
-  test("should fail to log in with non-existing username", async () => {
+  test("throws NotFoundError when logging in with a non-existing username", async () => {
     const loginPayload = createLoginFixture(prefix);
     loginPayload.email = "";
     loginPayload.userName = "testuse";
@@ -184,7 +184,7 @@ describe("AuthService", () => {
     );
   });
 
-  test("should log in successfully using valid username & password", async () => {
+  test("logs in successfully using a valid username and password", async () => {
     const loginPayload = createLoginFixture(prefix);
     loginPayload.email = "";
 
@@ -199,7 +199,7 @@ describe("AuthService", () => {
     assert.ok(payload);
   });
 
-  test("should log in successfully using valid email & password", async () => {
+  test("logs in successfully using a valid email and password", async () => {
     const loginPayload = createLoginFixture(prefix);
     loginPayload.userName = "";
 
@@ -214,7 +214,7 @@ describe("AuthService", () => {
     assert.ok(payload);
   });
 
-  test("should create a session on login and invalidate it on logout", async () => {
+  test("creates a session on login and invalidates it on logout", async () => {
     const loginPayload = createLoginFixture(prefix);
     loginPayload.userName = "";
 

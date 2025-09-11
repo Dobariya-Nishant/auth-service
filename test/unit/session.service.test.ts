@@ -15,7 +15,7 @@ describe("SessionService", () => {
     sessionService = child.resolve<ISessionService>("ISessionService");
   });
 
-  test("should throw ValidationError when creating session without userId", async () => {
+  test("throws a ValidationError when creating a session without userId", async () => {
     const jwtPayload = createJwtPayload();
     //@ts-ignore
     delete jwtPayload.userId;
@@ -31,7 +31,7 @@ describe("SessionService", () => {
     );
   });
 
-  test("should create a new session and return valid access/refresh tokens", async () => {
+  test("creates a session and returns valid access/refresh tokens", async () => {
     const jwtPayload = createJwtPayload();
 
     const tokens = await sessionService.create(jwtPayload);
@@ -51,7 +51,7 @@ describe("SessionService", () => {
     assert.ok(payload);
   });
 
-  test("should verify both access token and refresh token successfully", async () => {
+  test("verifies both access and refresh tokens successfully", async () => {
     const jwtPayload = createJwtPayload();
 
     const tokens = await sessionService.create(jwtPayload);
@@ -73,7 +73,7 @@ describe("SessionService", () => {
     assert.strictEqual(refreshTokenPayload?.oauthToken, jwtPayload.oauthToken);
   });
 
-  test("should update session with a new refresh token and invalidate the old one", async () => {
+  test("updates a session with a new refresh token and invalidates the old one", async () => {
     const jwtPayload = createJwtPayload();
 
     const tokens = await sessionService.create(jwtPayload);
@@ -115,7 +115,7 @@ describe("SessionService", () => {
     );
   });
 
-  test("should allow multiple active sessions for the same user and keep them isolated", async () => {
+  test("supports multiple active sessions per user and keeps them isolated", async () => {
     const jwtPayload = createJwtPayload();
 
     const tokens1 = await sessionService.create(jwtPayload);
@@ -141,7 +141,7 @@ describe("SessionService", () => {
     assert.ok(session2, "second session should exist");
   });
 
-  test("should delete a session successfully by userId + refreshToken", async () => {
+  test("deletes a session by userId and refreshToken", async () => {
     const jwtPayload = createJwtPayload();
 
     const tokens = await sessionService.create(jwtPayload);

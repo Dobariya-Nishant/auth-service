@@ -1,25 +1,31 @@
 version: "3.9"
 
 services:
-  app:
+  db:
+    image: mongo:latest
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_INITDB_DATABASE=test
+    ports:
+      - "27018:27017"
+
+  test:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: auth-service
-    ports:
-      - "${PORT}:${PORT}"
     environment:
-      - MONGO_URI=${DEV_MONGO_URI}
+      - PORT=${PORT}
+      - MONGO_HOST=${MONGO_HOST}
+      - MONGO_USER=${MONGO_USER}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_PORT=${MONGO_PORT}
+      - COOKIE_SECRET=${COOKIE_SECRET}
+      - ORIGIN=${ORIGIN}
+      - PUBLIC_REFRESH_TOKEN_KEY=${PUBLIC_REFRESH_TOKEN_KEY}
+      - PRIVATE_REFRESH_TOKEN_KEY=${PRIVATE_REFRESH_TOKEN_KEY}
+      - PUBLIC_ACCESS_TOKEN_KEY=${PUBLIC_ACCESS_TOKEN_KEY}
+      - PRIVATE_ACCESS_TOKEN_KEY=${PRIVATE_ACCESS_TOKEN_KEY}
     depends_on:
       - db
-
-  db:
-    image: mongo:latest
-    container_name: mongodb
-    restart: always
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=${DEV_MONGO_USER}
-      - MONGO_INITDB_ROOT_PASSWORD=${DEV_MONGO_PASSWORD}
-      - MONGO_INITDB_DATABASE=test
-    ports:
-      - "27017:27017"
+    command: ["npm", "run", "test:run"]

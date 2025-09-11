@@ -11,8 +11,8 @@ RUN npm run prepare && npm run build
 
 FROM node:lts-alpine3.22 AS prod
 WORKDIR /app
-COPY package*.json .env ./
+COPY package*.json ./
 RUN npm install --omit=dev --ignore-scripts
 COPY --from=build /app/dist ./dist
 
-CMD ["node", "dist/index.js"]
+CMD ["npm", "start"]
