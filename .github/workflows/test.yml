@@ -31,5 +31,10 @@ jobs:
           echo "MONGO_INITDB_DATABASE=${{ vars.MONGO_INITDB_DATABASE }}" >> .env.test
           echo "MONGO_PORT=${{ vars.MONGO_PORT }}" >> .env.test
           
+      - name: Show .env.test
+        run: |
+          echo "---- .env.test ----"
+          cat .env.test
+          
       - name: Test
         run: docker compose run --build --rm test 
