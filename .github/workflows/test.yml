@@ -35,6 +35,11 @@ jobs:
         run: |
           echo "---- .env.test ----"
           cat .env.test
+      - name: Print secret check
+        run: |
+          echo "Cookie secret length: ${#COOKIE_SECRET}"
+        env:
+          COOKIE_SECRET: ${{ secrets.COOKIE_SECRET }}  
           
       - name: Test
         run: docker compose run --build --rm test 
