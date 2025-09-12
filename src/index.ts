@@ -27,7 +27,7 @@ async function server() {
       }),
     },
     function (request, reply) {
-      reply.code(404).send({ message: "Not Found" });
+      reply.code(404).send({ message: "Not Founds" });
     }
   );
 
