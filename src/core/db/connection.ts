@@ -38,6 +38,7 @@ export async function connectTestDB(dbName: string): Promise<Connection> {
   }
 
   const uri = getMongoUrl(dbName);
+  console.log("test db uri", uri);
   const conn = mongoose.createConnection(uri);
 
   await conn.asPromise();

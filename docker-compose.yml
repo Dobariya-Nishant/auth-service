@@ -1,8 +1,10 @@
 services:
   db:
     image: mongo:latest
-    env_file:
-      - .env.test
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
     ports:
       - "27017:27017"
     networks:
@@ -12,8 +14,19 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    env_file:
-      - .env.test
+    environment:
+      - PORT=${PORT}
+      - COOKIE_SECRET=${COOKIE_SECRET}
+      - ORIGIN=${ORIGIN}
+      - PUBLIC_REFRESH_TOKEN_KEY=${PUBLIC_REFRESH_TOKEN_KEY}
+      - PRIVATE_REFRESH_TOKEN_KEY=${PRIVATE_REFRESH_TOKEN_KEY}
+      - PUBLIC_ACCESS_TOKEN_KEY=${PUBLIC_ACCESS_TOKEN_KEY}
+      - PRIVATE_ACCESS_TOKEN_KEY=${PRIVATE_ACCESS_TOKEN_KEY}
+      - MONGO_HOST=${MONGO_HOST}
+      - MONGO_PORT=${MONGO_PORT}
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
     depends_on:
       - db
     command: ["npm", "run", "test:run"]

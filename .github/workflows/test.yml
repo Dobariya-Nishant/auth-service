@@ -1,35 +1,36 @@
 name: Test
 
 on:
-  workflow_call:
-  
+  pull_request:
+    branches: [ "prod", "main", "dev" ]
+
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
+    
+    env:
+      PORT: ${{ vars.PORT }}
+      COOKIE_SECRET: ${{ secrets.COOKIE_SECRET }}
+      ORIGIN: ${{ vars.ORIGIN }}
+      PUBLIC_REFRESH_TOKEN_KEY: ${{ secrets.PUBLIC_REFRESH_TOKEN_KEY }}
+      PRIVATE_REFRESH_TOKEN_KEY: ${{ secrets.PRIVATE_REFRESH_TOKEN_KEY }}
+      PUBLIC_ACCESS_TOKEN_KEY: ${{ secrets.PUBLIC_ACCESS_TOKEN_KEY }}
+      PRIVATE_ACCESS_TOKEN_KEY: ${{ secrets.PRIVATE_ACCESS_TOKEN_KEY }}
+      MONGO_HOST: ${{ vars.MONGO_HOST }}
+      MONGO_INITDB_ROOT_USERNAME: ${{ vars.MONGO_INITDB_ROOT_USERNAME }}
+      MONGO_INITDB_ROOT_PASSWORD: ${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
+      MONGO_INITDB_DATABASE: ${{ vars.MONGO_INITDB_DATABASE }}
+      MONGO_PORT: ${{ vars.MONGO_PORT }}
+
     steps:
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ vars.DOCKERHUB_USER }}
+          username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          
-      - name: "Checkout"
+
+      - name: Checkout
         uses: actions/checkout@v4
-        
-      - name: Create .env.test file
-        run: |
-          echo "PORT=${{ vars.PORT }}" >> .env.test
-          echo "COOKIE_SECRET=${{ secrets.COOKIE_SECRET }}" >> .env.test
-          echo "ORIGIN=${{ vars.ORIGIN }}" >> .env.test
-          echo "PUBLIC_REFRESH_TOKEN_KEY=${{ secrets.PUBLIC_REFRESH_TOKEN_KEY }}" >> .env.test
-          echo "PRIVATE_REFRESH_TOKEN_KEY=${{ secrets.PRIVATE_REFRESH_TOKEN_KEY }}" >> .env.test
-          echo "PUBLIC_ACCESS_TOKEN_KEY=${{ secrets.PUBLIC_ACCESS_TOKEN_KEY }}" >> .env.test
-          echo "PRIVATE_ACCESS_TOKEN_KEY=${{ secrets.PRIVATE_ACCESS_TOKEN_KEY }}" >> .env.test
-          echo "MONGO_HOST=${{ vars.MONGO_HOST }}" >> .env.test
-          echo "MONGO_INITDB_ROOT_USERNAME=${{ vars.MONGO_INITDB_ROOT_USERNAME }}" >> .env.test
-          echo "MONGO_INITDB_ROOT_PASSWORD=${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}" >> .env.test
-          echo "MONGO_INITDB_DATABASE=${{ vars.MONGO_INITDB_DATABASE }}" >> .env.test
-          echo "MONGO_PORT=${{ vars.MONGO_PORT }}" >> .env.test
-          
+
       - name: Test
-        run: docker compose run --build --rm test 
+        run: docker compose run --build --rm test

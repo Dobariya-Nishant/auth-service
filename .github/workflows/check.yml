@@ -1,0 +1,13 @@
+name: Checks
+
+on:
+  pull_request:
+    branches: [ "prod", "main", "dev" ]
+
+jobs:
+  test-lint:
+    name: Test and Lint
+    uses: ./.github/workflows/test.yml
+    secrets:
+      DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
