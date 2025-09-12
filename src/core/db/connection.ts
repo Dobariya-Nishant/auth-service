@@ -1,16 +1,18 @@
 import { mongoose } from "@typegoose/typegoose";
 import { Connection } from "mongoose";
 
+function getMongoUrl(dbName: string) {
+  const mongoHost = process.env.MONGO_HOST || "db";
+  const mongoUser = process.env.MONGO_INITDB_ROOT_USERNAME || "admin";
+  const mongoPassword = process.env.MONGO_INITDB_ROOT_PASSWORD || "test";
+  const mongoPort = process.env.MONGO_PORT || "27017";
+
+  return `mongodb://${mongoUser}:${mongoPassword}@${mongoHost}:${mongoPort}/${dbName}?authSource=admin`;
+}
+
 export async function connectDB(dbName = "test") {
   try {
-    const mongoHost = process.env.MONGO_HOST || "db";
-    const mongoUser = process.env.MONGO_USER || "admin";
-    const mongoPassword = process.env.MONGO_PASSWORD || "testx";
-    const mongoPort = process.env.MONGO_PORT || "27017";
-
-    const uri = `mongodb://${mongoUser}:${mongoPassword}@${mongoHost}:${mongoPort}/${dbName}?authSource=admin`;
-    console.log("process.env.MONGO_URI", process.env.MONGO_URI);
-
+    const uri = getMongoUrl("cardstudio");
     await mongoose.connect(uri);
     console.log("✅ MongoDB connected");
   } catch (err) {
@@ -34,12 +36,8 @@ export async function connectTestDB(dbName: string): Promise<Connection> {
   if (connections[dbName]) {
     return connections[dbName];
   }
-  const mongoHost = process.env.MONGO_HOST || "db";
-  const mongoUser = process.env.MONGO_USER || "admin";
-  const mongoPassword = process.env.MONGO_PASSWORD || "testx";
-  const mongoPort = process.env.MONGO_PORT || "27017";
 
-  const uri = `mongodb://${mongoUser}:${mongoPassword}@${mongoHost}:${mongoPort}/${dbName}?authSource=admin`;
+  const uri = getMongoUrl(dbName);
   const conn = mongoose.createConnection(uri);
 
   await conn.asPromise();

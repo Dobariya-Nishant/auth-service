@@ -3,10 +3,8 @@ version: "3.9"
 services:
   db:
     image: mongo:latest
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
-      - MONGO_INITDB_DATABASE=test
+    env_file:
+      - .env.test
     ports:
       - "27018:27017"
 
@@ -14,18 +12,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    environment:
-      - PORT=${PORT}
-      - MONGO_HOST=${MONGO_HOST}
-      - MONGO_USER=${MONGO_USER}
-      - MONGO_PASSWORD=${MONGO_PASSWORD}
-      - MONGO_PORT=${MONGO_PORT}
-      - COOKIE_SECRET=${COOKIE_SECRET}
-      - ORIGIN=${ORIGIN}
-      - PUBLIC_REFRESH_TOKEN_KEY=${PUBLIC_REFRESH_TOKEN_KEY}
-      - PRIVATE_REFRESH_TOKEN_KEY=${PRIVATE_REFRESH_TOKEN_KEY}
-      - PUBLIC_ACCESS_TOKEN_KEY=${PUBLIC_ACCESS_TOKEN_KEY}
-      - PRIVATE_ACCESS_TOKEN_KEY=${PRIVATE_ACCESS_TOKEN_KEY}
+    env_file:
+      - .env.test
     depends_on:
       - db
     command: ["npm", "run", "test:run"]
