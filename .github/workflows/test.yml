@@ -50,6 +50,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v5
         with:
+          aws-region: "${{ vars.AWS_REGION }}"
           role-to-assume: "${{ vars.IAM_ROLE }}"
 
       - name: Build and Push Docker Image to ECR
