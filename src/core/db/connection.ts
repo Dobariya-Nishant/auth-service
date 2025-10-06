@@ -12,7 +12,7 @@ function getMongoUrl(dbName: string) {
 
 export async function connectDB(dbName = "test") {
   try {
-    const uri = getMongoUrl("cardstudio");
+    const uri = getMongoUrl("api-service");
     await mongoose.connect(uri);
     console.log("✅ MongoDB connected");
   } catch (err) {

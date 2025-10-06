@@ -2,7 +2,6 @@ export default {
   type: "object",
   required: [
     "PORT",
-    "ORIGIN",
     "COOKIE_SECRET",
     "PUBLIC_REFRESH_TOKEN_KEY",
     "PRIVATE_REFRESH_TOKEN_KEY",
@@ -13,13 +12,9 @@ export default {
     "MONGO_INITDB_ROOT_PASSWORD",
     "MONGO_INITDB_DATABASE",
     "MONGO_PORT",
-    // "GOOGLE_CLIENT_ID",
-    // "GOOGLE_CLIENT_SECRET",
-    // "GOOGLE_CALLBACK_URL",
   ],
   properties: {
     PORT: { type: "string" },
-    ORIGIN: { type: "string" },
     COOKIE_SECRET: { type: "string" },
     GOOGLE_CLIENT_ID: { type: "string" },
     GOOGLE_CLIENT_SECRET: { type: "string" },

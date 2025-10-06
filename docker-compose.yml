@@ -14,10 +14,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    image: ${ECR_REPO:-api-dev}:${IMAGE_TAG:-latest}
     environment:
       - PORT=${PORT}
       - COOKIE_SECRET=${COOKIE_SECRET}
-      - ORIGIN=${ORIGIN}
       - PUBLIC_REFRESH_TOKEN_KEY=${PUBLIC_REFRESH_TOKEN_KEY}
       - PRIVATE_REFRESH_TOKEN_KEY=${PRIVATE_REFRESH_TOKEN_KEY}
       - PUBLIC_ACCESS_TOKEN_KEY=${PUBLIC_ACCESS_TOKEN_KEY}
