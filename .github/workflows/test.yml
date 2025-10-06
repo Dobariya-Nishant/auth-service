@@ -44,11 +44,6 @@ jobs:
       name: prod
       # url: https://your-prod-url.com
     steps:
-      - name: Wait for Manual Approval
-        uses: trstringer/manual-approval@v1
-        with:
-          minimum-approvals: 1
-
       - name: Checkout
         uses: actions/checkout@v4
 
