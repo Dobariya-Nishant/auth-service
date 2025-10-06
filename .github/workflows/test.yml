@@ -77,5 +77,5 @@ jobs:
           IMAGE_TAG="${{ github.sha }}"
           aws ecr get-login-password --region ${{ vars.AWS_REGION }} | docker login --username AWS --password-stdin ${{ vars.ECR_URL }}
           docker compose build test
-          docker tag IMAGE_NAME:IMAGE_TAG ${{ vars.ECR_URL }}/IMAGE_NAME:IMAGE_TAG
+          docker tag $IMAGE_NAME:$IMAGE_TAG ${{ vars.ECR_URL }}/$IMAGE_NAME:$IMAGE_TAG
           docker push ${{ vars.ECR_URL }}/$IMAGE_NAME:$IMAGE_TAG
