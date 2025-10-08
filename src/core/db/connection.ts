@@ -14,12 +14,19 @@ function getMongoUrl(dbName: string) {
 export async function connectDB(dbName = "test") {
   try {
     const uri = getMongoUrl("auth_service");
-    await mongoose.connect(uri, {
-      tls: true,
-      tlsCAFile: path.resolve(__dirname, "global-bundle.pem"),
-      retryWrites: false,
-      serverSelectionTimeoutMS: 5000,
-    });
+    await mongoose.connect(
+      "mongodb://poweruser:SuperSecret123!@127.0.0.1:27017/test",
+      {
+        tls: true,
+        tlsCAFile: path.resolve(__dirname, "global-bundle.pem"),
+        retryWrites: false,
+        ssl: true, // force SSL explicitly
+        directConnection: true, // 🧩 key for DocumentDB
+        tlsAllowInvalidHostnames: true,
+        serverSelectionTimeoutMS: 10000,
+        authMechanism: "SCRAM-SHA-1",
+      }
+    );
     console.log("✅ MongoDB connected");
   } catch (err) {
     console.error("❌ MongoDB connection error:", err);
