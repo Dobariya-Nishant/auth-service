@@ -45,22 +45,7 @@ jobs:
     needs: test
     environment:
       name: prod
-
-    env:
-      PORT: ${{ vars.PORT }}
-      COOKIE_SECRET: ${{ secrets.COOKIE_SECRET }}
-      PUBLIC_REFRESH_TOKEN_KEY: ${{ secrets.PUBLIC_REFRESH_TOKEN_KEY }}
-      PRIVATE_REFRESH_TOKEN_KEY: ${{ secrets.PRIVATE_REFRESH_TOKEN_KEY }}
-      PUBLIC_ACCESS_TOKEN_KEY: ${{ secrets.PUBLIC_ACCESS_TOKEN_KEY }}
-      PRIVATE_ACCESS_TOKEN_KEY: ${{ secrets.PRIVATE_ACCESS_TOKEN_KEY }}
-      MONGO_HOST: ${{ vars.MONGO_HOST }}
-      MONGO_INITDB_ROOT_USERNAME: ${{ vars.MONGO_INITDB_ROOT_USERNAME }}
-      MONGO_INITDB_ROOT_PASSWORD: ${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
-      MONGO_INITDB_DATABASE: ${{ vars.MONGO_INITDB_DATABASE }}
-      MONGO_PORT: ${{ vars.MONGO_PORT }}
-      ECR_REPO: ${{ vars.ECR_REPO }}
-      IMAGE_TAG: ${{ github.sha }}
-
+      
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -76,6 +61,6 @@ jobs:
           IMAGE_NAME="${{ vars.ECR_REPO }}"
           IMAGE_TAG="${{ github.sha }}"
           aws ecr get-login-password --region ${{ vars.AWS_REGION }} | docker login --username AWS --password-stdin ${{ vars.ECR_URL }}
-          docker compose build test
+          docker build -t $IMAGE_NAME:$IMAGE_TAG .
           docker tag $IMAGE_NAME:$IMAGE_TAG ${{ vars.ECR_URL }}/$IMAGE_NAME:$IMAGE_TAG
           docker push ${{ vars.ECR_URL }}/$IMAGE_NAME:$IMAGE_TAG
