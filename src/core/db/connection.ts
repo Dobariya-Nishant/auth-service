@@ -1,5 +1,6 @@
 import { mongoose } from "@typegoose/typegoose";
 import { Connection } from "mongoose";
+import path from "path";
 
 function getMongoUrl(dbName: string) {
   const mongoHost = process.env.MONGO_HOST || "db";
@@ -7,13 +8,25 @@ function getMongoUrl(dbName: string) {
   const mongoPassword = process.env.MONGO_INITDB_ROOT_PASSWORD || "test";
   const mongoPort = process.env.MONGO_PORT || "27017";
 
-  return `mongodb://${mongoUser}:${mongoPassword}@${mongoHost}:${mongoPort}/${dbName}?authSource=admin`;
+  return `mongodb://${mongoUser}:${mongoPassword}@${mongoHost}:${mongoPort}/${dbName}`;
 }
 
 export async function connectDB(dbName = "test") {
   try {
-    const uri = getMongoUrl("cardstudio");
-    await mongoose.connect(uri);
+    const uri = getMongoUrl("auth_service");
+    await mongoose.connect(
+      "mongodb://poweruser:SuperSecret123!@127.0.0.1:27017/test",
+      {
+        tls: true,
+        tlsCAFile: path.resolve(__dirname, "global-bundle.pem"),
+        retryWrites: false,
+        ssl: true, // force SSL explicitly
+        directConnection: true, // 🧩 key for DocumentDB
+        tlsAllowInvalidHostnames: true,
+        serverSelectionTimeoutMS: 10000,
+        authMechanism: "SCRAM-SHA-1",
+      }
+    );
     console.log("✅ MongoDB connected");
   } catch (err) {
     console.error("❌ MongoDB connection error:", err);

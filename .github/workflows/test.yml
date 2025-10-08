@@ -1,17 +1,21 @@
 name: Test
 
+permissions:
+  id-token: write
+  contents: read
+
 on:
   pull_request:
-    branches: [ "prod", "main", "dev" ]
+    branches: ["prod", "main", "dev"]
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+    environment: dev
+
     env:
       PORT: ${{ vars.PORT }}
       COOKIE_SECRET: ${{ secrets.COOKIE_SECRET }}
-      ORIGIN: ${{ vars.ORIGIN }}
       PUBLIC_REFRESH_TOKEN_KEY: ${{ secrets.PUBLIC_REFRESH_TOKEN_KEY }}
       PRIVATE_REFRESH_TOKEN_KEY: ${{ secrets.PRIVATE_REFRESH_TOKEN_KEY }}
       PUBLIC_ACCESS_TOKEN_KEY: ${{ secrets.PUBLIC_ACCESS_TOKEN_KEY }}
@@ -34,3 +38,29 @@ jobs:
 
       - name: Test
         run: docker compose run --build --rm test
+
+  # Manual deploy for main/prod
+  deploy-prod:
+    runs-on: ubuntu-latest
+    needs: test
+    environment:
+      name: prod
+      
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          aws-region: "${{ vars.AWS_REGION }}"
+          role-to-assume: "${{ vars.IAM_ROLE }}"
+
+      - name: Build and Push Docker Image to ECR
+        run: |
+          IMAGE_NAME="${{ vars.ECR_REPO }}"
+          IMAGE_TAG="${{ github.sha }}"
+          aws ecr get-login-password --region ${{ vars.AWS_REGION }} | docker login --username AWS --password-stdin ${{ vars.ECR_URL }}
+          docker build -t $IMAGE_NAME:$IMAGE_TAG .
+          docker tag $IMAGE_NAME:$IMAGE_TAG ${{ vars.ECR_URL }}/$IMAGE_NAME:$IMAGE_TAG
+          docker push ${{ vars.ECR_URL }}/$IMAGE_NAME:$IMAGE_TAG

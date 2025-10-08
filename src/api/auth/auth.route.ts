@@ -25,7 +25,7 @@ export default async function authRoutes(app: FastifyInstance) {
         },
         required: ["userName", "email", "password"],
         additionalProperties: false,
-      },
+      }, 
     },
     handler: authController.signUp.bind(authController),
   });

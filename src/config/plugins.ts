@@ -23,7 +23,7 @@ export default async function registerPlugins(app: FastifyInstance) {
   });
 
   await app.register(fastifyCors, {
-    origin: [process.env.ORIGIN as string],
+    origin: ["*"],
     credentials: true,
     hook: "onRequest",
   });
